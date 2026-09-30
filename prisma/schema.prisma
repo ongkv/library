@@ -12,15 +12,19 @@ datasource db {
 }
 
 model User {
-  id          Int       @id @default(autoincrement())
-  f_name      String
-  l_name      String
-  email       String    @unique
-  phone       String
-  password    String
-  address     String
-  created_at  DateTime  @default(now())
-  updated_at  DateTime? @updatedAt
+  id                        Int                     @id @default(autoincrement())
+  book_catalogues           BookCatalogue[]
+  book_catalogue_history    BookCatalogueHistory[]
+  user_book_notifications   UserBookNotification[]
+  payment_transactions      PaymentTransaction[]
+  f_name                    String
+  l_name                    String
+  email                     String                  @unique
+  phone                     String
+  password                  String
+  address                   String
+  created_at                DateTime                @default(now())
+  updated_at                DateTime?               @updatedAt
 
   @@map("users")
 }
@@ -28,7 +32,7 @@ model User {
 model BookFormat {
   id          Int       @id @default(autoincrement())
   books       Book[]
-  name        String
+  name        String    @unique
   created_at  DateTime  @default(now())
   updated_at  DateTime? @updatedAt
 
@@ -36,19 +40,203 @@ model BookFormat {
 }
 
 model Book {
-  id              Int         @id @default(autoincrement())
-  book_format     BookFormat  @relation(fields: [book_format_id], references: [id])
-  book_format_id  Int
-  title           String
-  author          String
-  year            DateTime
-  isbn            String      @unique
-  cover_img       Bytes?
-  description     String?
-  page_count      Int
-  created_at      DateTime    @default(now())
-  updated_at      DateTime?   @updatedAt
-  deleted_at      DateTime?
+  id                        Int                     @id @default(autoincrement())
+  book_genres               BookGenre[]
+  book_catalogues           BookCatalogue[]
+  book_catalogue_history    BookCatalogueHistory[]
+  user_book_notifications   UserBookNotification[]
+  book_format               BookFormat              @relation(fields: [book_format_id], references: [id])
+  book_format_id            Int
+  title                     String
+  author                    String
+  year                      DateTime
+  isbn                      String                  @unique
+  cover_img                 Bytes?
+  description               String?
+  page_count                Int
+  created_at                DateTime                @default(now())
+  updated_at                DateTime?               @updatedAt
+  deleted_at                DateTime?
 
   @@map("books")
+}
+
+model BookGenreType {
+  id          Int         @id @default(autoincrement())
+  book_genres BookGenre[]
+  name        String      @unique
+  created_at  DateTime    @default(now())
+  updated_at  DateTime?   @updatedAt
+
+  @@map("book_genre_types")
+}
+
+model BookGenre {
+  id                  Int             @id @default(autoincrement())
+  book                Book            @relation(fields: [book_id], references: [id])
+  book_id             Int       
+  book_genre_type     BookGenreType   @relation(fields: [book_genre_type_id], references: [id])
+  book_genre_type_id  Int
+  created_at          DateTime        @default(now())
+  updated_at          DateTime?       @updatedAt
+
+  @@map("book_genres")
+  @@unique([book_id, book_genre_type_id], map: "book_id_genre_type_unique")
+}
+
+model BookStatus {
+  id                      Int                     @id @default(autoincrement())
+  book_catalogues         BookCatalogue[]
+  book_catalogue_history  BookCatalogueHistory[]
+  status                  String                  @unique
+  created_at              DateTime                @default(now())
+  updated_at              DateTime?               @updatedAt
+
+  @@map("book_status")
+}
+
+model BookCatalogue {
+  id                      Int                     @id @default(autoincrement())
+  book_catalogue_history  BookCatalogueHistory[]
+  book                    Book                    @relation(fields: [book_id], references: [id])
+  book_id                 Int                     @unique
+  book_status             BookStatus              @relation(fields: [book_status_id], references: [id])
+  book_status_id          Int
+  user                    User?                    @relation(fields: [user_id], references: [id])
+  user_id                 Int?
+  reserved_at             DateTime?
+  borrowed_at             DateTime?
+  return_by               DateTime?
+  returned_at             DateTime?
+  created_at              DateTime                @default(now())
+  updated_at              DateTime?               @updatedAt
+  deleted_at              DateTime?
+
+  @@map("book_catalogue")
+}
+
+model BookCatalogueHistory {
+  id                    Int               @id @default(autoincrement())
+  staff_actions_logs    StaffActionsLog[]
+  payment_transactions  PaymentTransaction[]
+  book_catalogue        BookCatalogue     @relation(fields: [book_catalogue_id], references: [id])
+  book_catalogue_id     Int
+  book                  Book              @relation(fields: [book_id], references: [id])
+  book_id               Int
+  book_status           BookStatus        @relation(fields: [book_status_id], references: [id])
+  book_status_id        Int
+  user                  User?              @relation(fields: [user_id], references: [id])
+  user_id               Int?
+  reserved_at           DateTime?
+  borrowed_at           DateTime?
+  return_by             DateTime?
+  returned_at           DateTime?
+  created_at            DateTime          @default(now())
+  updated_at            DateTime?         @updatedAt
+  deleted_at            DateTime?
+
+  @@map("book_catalogue_history")
+}
+
+model NotificationType {
+  id                      Int                     @id @default(autoincrement())
+  user_book_notification  UserBookNotification[]
+  name                    String                  @unique
+  created_at              DateTime                @default(now())
+  updated_at              DateTime?               @updatedAt
+
+  @@map("notification_types")
+}
+
+model UserBookNotification {
+  id                    Int               @id @default(autoincrement())
+  user                  User              @relation(fields: [user_id], references:[id])
+  user_id               Int
+  book                  Book?              @relation(fields: [book_id], references:[id])
+  book_id               Int?
+  notification_type     NotificationType  @relation(fields: [notification_type_id], references: [id])
+  notification_type_id  Int
+  is_read               Boolean
+  created_at            DateTime          @default(now())         
+  updated_at            DateTime?         @updatedAt
+  deleted_at            DateTime?
+
+  @@map("user_book_notifications")
+}
+
+model Staff {
+  id                  Int                 @id @default(autoincrement())
+  staff_actions_logs  StaffActionsLog[]
+  f_name              String
+  l_name              String
+  email               String              @unique
+  phone               String
+  password            String
+  address             String
+  created_at          DateTime            @default(now())
+  updated_at          DateTime?           @updatedAt
+
+  @@map("staff")
+}
+
+model StaffActionsLog {
+  id                          Int                   @id @default(autoincrement())
+  staff                       Staff                 @relation(fields: [staff_id], references: [id])
+  staff_id                    Int
+  book_catalogue_history      BookCatalogueHistory  @relation(fields: [book_catalogue_history_id], references: [id])
+  book_catalogue_history_id   Int
+  payment_transaction         PaymentTransaction    @relation(fields: [payment_transaction_id], references: [id])
+  payment_transaction_id      Int
+  created_at                  DateTime              @default(now())
+  updated_at                  DateTime?             @updatedAt
+
+  @@map("staff_actions_log")
+}
+
+model PaymentTransactionType {
+  id                    Int                   @id @default(autoincrement())
+  payment_transaction   PaymentTransaction[]
+  name                  String                @unique
+  created_at            DateTime              @default(now())
+  updated_at            DateTime?             @updatedAt
+
+  @@map("payment_transaction_types")
+}
+
+model PaymentTransaction {
+  id                          Int                     @id @default(autoincrement())
+  staff_actions_logs          StaffActionsLog[]
+  user                        User                    @relation(fields: [user_id], references: [id])
+  user_id                     Int                     
+  transaction_type            PaymentTransactionType  @relation(fields: [transaction_type_id], references: [id])
+  transaction_type_id         Int
+  book_catalogue_history      BookCatalogueHistory    @relation(fields: [book_catalogue_history_id], references: [id])
+  book_catalogue_history_id   Int
+  value                       Float
+  created_at                  DateTime                @default(now())
+  updated_at                  DateTime?               @updatedAt
+
+  @@map("payment_transactions")
+}
+
+model ServiceFeeType {
+  id            Int           @id @default(autoincrement())
+  service_fees  ServiceFee[]
+  name          String        @unique
+  created_at    DateTime      @default(now())
+  updated_at    DateTime?     @updatedAt
+
+  @@map("service_fee_types")
+}
+
+model ServiceFee {
+  id              Int             @id @default(autoincrement())
+  fee_type        ServiceFeeType  @relation(fields: [fee_type_id], references: [id])
+  fee_type_id     Int             @unique
+  value           Float
+  is_late_charge  Boolean
+  created_at      DateTime        @default(now())
+  updated_at      DateTime?       @updatedAt
+
+  @@map("service_fees")
 }
