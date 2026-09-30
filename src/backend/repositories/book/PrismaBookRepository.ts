@@ -1,8 +1,19 @@
 import { prisma } from "../../models/prisma-db";
-import { IBaseRepository } from "../IBaseRepository";
 import { Book } from "@/generated/prisma/client";
+import { IBookRepository } from "./IBookRepository";
 
-export class PrismaBookRepository implements IBaseRepository<Book> {
+export class PrismaBookRepository implements IBookRepository {
+  async getLatestNRows(
+    n: number,
+    selectArgs?: Partial<Record<keyof Book, boolean>>,
+  ): Promise<Book[]> {
+    return prisma.book.findMany({
+      take: n,
+      orderBy: [{ id: "desc" }],
+      select: selectArgs,
+    });
+  }
+
   async getAll(): Promise<Book[]> {
     return prisma.book.findMany();
   }

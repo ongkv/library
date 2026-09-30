@@ -1,5 +1,7 @@
-import { Fetcher } from "swr";
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const fetcher: Fetcher<any, string> = (...args) =>
-  fetch(...args).then((res) => res.json());
+export async function fetcher<JSON = any>(
+  input: RequestInfo,
+  init?: RequestInit,
+): Promise<JSON> {
+  const res = await fetch(input, init);
+  return res.json();
+}
