@@ -13,8 +13,6 @@ import { HTMLInputTypeAttribute } from "react";
 import { Control, Controller, useForm } from "react-hook-form";
 import NumberField from "../form/NumberField";
 import { PatternFormat } from "react-number-format";
-import useSWR from "swr";
-import { fetcher } from "@/lib/helpers/fetcher";
 
 type BookCatalogueAddFormInputs = {
   title: string;
