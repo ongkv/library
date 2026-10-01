@@ -11,6 +11,7 @@
     "db-init": "npx prisma migrate dev --name init"
   },
   "dependencies": {
+    "@base-ui/react": "^1.8.0",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
     "@mui/icons-material": "^9.4.0",
@@ -22,6 +23,8 @@
     "next": "16.3.6",
     "react": "19.2.8",
     "react-dom": "19.2.8",
+    "react-hook-form": "^7.89.0",
+    "react-number-format": "^5.4.5",
     "sqlite": "^5.1.1",
     "sqlite3": "^6.0.1",
     "swr": "^2.5.1"
