@@ -4,7 +4,6 @@ import { LANDING_BOOK_COUNT } from "@/lib/types/book";
 import { GetLandingBooksDTO } from "@/lib/types/DTO/book";
 import { Box, Grid, Stack, Typography } from "@mui/material";
 import { NextRouter, useRouter } from "next/router";
-import { useEffect, useState } from "react";
 import useSWR from "swr";
 
 type LandingCardRowProps = {
@@ -37,20 +36,12 @@ export default function Home() {
     "/api/landing/getLandingBooks?count=" + LANDING_BOOK_COUNT,
     fetcher,
   );
-  const [topRow, setTopRow] = useState<GetLandingBooksDTO[]>([]);
-  const [bottomRow, setBottomRow] = useState<GetLandingBooksDTO[]>([]);
 
-  useEffect(() => {
-    if (data && !isLoading) {
-      const m: number = Math.floor(data.length / 2);
-      const [leftSide, rightSide] = [
-        data.slice(0, m),
-        data.slice(m, data.length),
-      ];
-      setTopRow(leftSide);
-      setBottomRow(rightSide);
-    }
-  }, [data, isLoading]);
+  if (isLoading) return <div>Loading...</div>;
+  if (!data) return <div>Error: Failed to retrieve book data</div>;
+
+  const m: number = Math.floor(data.length / 2);
+  const [topRow, bottomRow] = [data.slice(0, m), data.slice(m, data.length)];
 
   return (
     <Box sx={{ p: 5 }}>

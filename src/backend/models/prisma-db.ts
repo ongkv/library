@@ -1,6 +1,9 @@
 import { PrismaClient } from "@/generated/prisma/client";
 import { LOREM_IPSUM } from "@/lib/helpers/placeholders";
-import { BookFormats } from "@/lib/types/BookFormat";
+import { RETURN_BY_DAYS } from "@/lib/types/book";
+import { BookFormats } from "@/lib/types/bookFormat";
+import { BookStatuses } from "@/lib/types/bookStatus";
+import { add } from "date-fns";
 
 const globalForPrisma = globalThis as unknown as { prisma: PrismaClient };
 
@@ -53,6 +56,7 @@ const seedBooks = async () => {
       data: [
         // Science Fiction
         {
+          id: 1,
           book_format_id: BookFormats.Paperback,
           title: "The Stellar Horizon",
           author: "Gene Rodriquez",
@@ -63,6 +67,7 @@ const seedBooks = async () => {
         },
         // Fantasy
         {
+          id: 2,
           book_format_id: BookFormats.Hardcover,
           title: "Realm",
           author: "Mortimer Hersey",
@@ -73,6 +78,7 @@ const seedBooks = async () => {
         },
         // Horror
         {
+          id: 3,
           book_format_id: BookFormats.Paperback,
           title: "Dead In Grave",
           author: "Estelle Fennimore",
@@ -83,6 +89,7 @@ const seedBooks = async () => {
         },
         // Romance
         {
+          id: 4,
           book_format_id: BookFormats.Hardcover,
           title: "Dog Beyond Love",
           author: "Jefferson Jacobs",
@@ -93,6 +100,7 @@ const seedBooks = async () => {
         },
         // Mystery
         {
+          id: 5,
           book_format_id: BookFormats.Paperback,
           title: "Peculiar",
           author: "Obadiah Bush",
@@ -103,6 +111,7 @@ const seedBooks = async () => {
         },
         // Thriller/Suspense
         {
+          id: 6,
           book_format_id: BookFormats.Hardcover,
           title: "Secret Protocol",
           author: "Erin Ferguson",
@@ -113,6 +122,7 @@ const seedBooks = async () => {
         },
         // Historical Fiction
         {
+          id: 7,
           book_format_id: BookFormats.Paperback,
           title: "Chronicle",
           author: "Timothy Cummings",
@@ -123,6 +133,7 @@ const seedBooks = async () => {
         },
         // Literary
         {
+          id: 8,
           book_format_id: BookFormats.Hardcover,
           title: "Studies in Economics",
           author: "Dwight Burgess",
@@ -136,7 +147,167 @@ const seedBooks = async () => {
   }
 };
 
+const seedBookStatus = async () => {
+  const count = await prisma.bookStatus.count();
+  if (count === 0) {
+    await prisma.bookStatus.createMany({
+      data: [
+        {
+          id: BookStatuses.Available,
+          status: BookStatuses[BookStatuses.Available],
+        },
+        {
+          id: BookStatuses.Borrowed,
+          status: BookStatuses[BookStatuses.Borrowed],
+        },
+        {
+          id: BookStatuses.Reserved,
+          status: BookStatuses[BookStatuses.Reserved],
+        },
+      ],
+    });
+  }
+};
+
+const LATE_BORROWED_DATE: Date = new Date("2026-08-08");
+const NOT_LATE_DATE: Date = new Date("2026-09-30");
+
+const seedBookCatalogue = async () => {
+  const count = await prisma.bookCatalogue.count();
+  if (count === 0) {
+    await prisma.bookCatalogue.createMany({
+      data: [
+        {
+          id: 1,
+          book_id: 1,
+          book_status_id: BookStatuses.Available,
+        },
+        {
+          id: 2,
+          book_id: 2,
+          book_status_id: BookStatuses.Borrowed,
+          user_id: 1,
+          borrowed_at: LATE_BORROWED_DATE,
+          return_by: new Date(
+            add(LATE_BORROWED_DATE, { days: RETURN_BY_DAYS }),
+          ),
+        },
+        {
+          id: 3,
+          book_id: 3,
+          book_status_id: BookStatuses.Reserved,
+          user_id: 1,
+          reserved_at: NOT_LATE_DATE,
+        },
+        {
+          id: 4,
+          book_id: 4,
+          book_status_id: BookStatuses.Available,
+        },
+        {
+          id: 5,
+          book_id: 5,
+          book_status_id: BookStatuses.Borrowed,
+          user_id: 1,
+          borrowed_at: NOT_LATE_DATE,
+          return_by: new Date(add(NOT_LATE_DATE, { days: RETURN_BY_DAYS })),
+        },
+        {
+          id: 6,
+          book_id: 6,
+          book_status_id: BookStatuses.Reserved,
+          user_id: 1,
+          reserved_at: NOT_LATE_DATE,
+        },
+        {
+          id: 7,
+          book_id: 7,
+          book_status_id: BookStatuses.Available,
+        },
+        {
+          id: 8,
+          book_id: 8,
+          book_status_id: BookStatuses.Borrowed,
+          user_id: 1,
+          reserved_at: new Date("2026-07-30"),
+          borrowed_at: LATE_BORROWED_DATE,
+          return_by: new Date(
+            add(LATE_BORROWED_DATE, { days: RETURN_BY_DAYS }),
+          ),
+        },
+      ],
+    });
+  }
+};
+
+const seedBookCatalogueHistory = async () => {
+  const count = await prisma.bookCatalogueHistory.count();
+  if (count === 0) {
+    await prisma.bookCatalogueHistory.createMany({
+      data: [
+        {
+          book_id: 1,
+          book_catalogue_id: 1,
+          book_status_id: BookStatuses.Available,
+        },
+        {
+          book_id: 2,
+          book_catalogue_id: 2,
+          book_status_id: BookStatuses.Borrowed,
+          user_id: 1,
+          borrowed_at: LATE_BORROWED_DATE,
+          return_by: add(LATE_BORROWED_DATE, { days: RETURN_BY_DAYS }),
+        },
+        {
+          book_id: 3,
+          book_catalogue_id: 3,
+          book_status_id: BookStatuses.Reserved,
+          user_id: 1,
+          reserved_at: NOT_LATE_DATE,
+        },
+        {
+          book_id: 4,
+          book_catalogue_id: 4,
+          book_status_id: BookStatuses.Available,
+        },
+        {
+          book_id: 5,
+          book_catalogue_id: 5,
+          book_status_id: BookStatuses.Borrowed,
+          user_id: 1,
+          borrowed_at: NOT_LATE_DATE,
+          return_by: add(NOT_LATE_DATE, { days: RETURN_BY_DAYS }),
+        },
+        {
+          book_id: 6,
+          book_catalogue_id: 6,
+          book_status_id: BookStatuses.Reserved,
+          user_id: 1,
+          reserved_at: NOT_LATE_DATE,
+        },
+        {
+          book_id: 7,
+          book_catalogue_id: 7,
+          book_status_id: BookStatuses.Available,
+        },
+        {
+          book_id: 8,
+          book_catalogue_id: 8,
+          book_status_id: BookStatuses.Borrowed,
+          user_id: 1,
+          reserved_at: new Date("2026-07-30"),
+          borrowed_at: LATE_BORROWED_DATE,
+          return_by: add(LATE_BORROWED_DATE, { days: RETURN_BY_DAYS }),
+        },
+      ],
+    });
+  }
+};
+
 // Run seed if needed
 await seedUsers();
 await seedBookFormats();
 await seedBooks();
+await seedBookStatus();
+await seedBookCatalogue();
+await seedBookCatalogueHistory();

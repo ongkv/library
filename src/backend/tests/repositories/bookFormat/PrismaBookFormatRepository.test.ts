@@ -1,6 +1,6 @@
 import { beforeEach, expect, test } from "@jest/globals";
 import { createBookFormat } from "../../helpers/dbUtils";
-import { BookFormats } from "../../../../lib/types/BookFormat";
+import { BookFormats } from "../../../../lib/types/bookFormat";
 import { Context, createMockContext, MockContext } from "../../helpers/context";
 
 let mockCtx: MockContext;
