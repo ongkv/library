@@ -1,4 +1,5 @@
 import { BookFormats } from "@/lib/types/bookFormat";
+import { GetStaffCatalogueBooksDTO } from "@/lib/types/DTO/bookCatalogue";
 import Box from "@mui/material/Box";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 
@@ -73,11 +74,35 @@ const rows = [
   { id: 18, l_name: "Roxie", f_name: "Harvey" },
 ];
 
-export default function BookCatalogueList() {
+type BookCatalogueListProps = {
+  data: GetStaffCatalogueBooksDTO[];
+};
+
+export default function BookCatalogueList({ data }: BookCatalogueListProps) {
+  const formattedData = data.map((data) => {
+    return {
+      id: data.id,
+      title: data.book.title,
+      author: data.book.author,
+      format: BookFormats[data.book.book_format_id],
+      reservedAt: data.reserved_at
+        ? new Date(String(data.reserved_at)).toLocaleDateString()
+        : "",
+      borrowedAt: data.borrowed_at
+        ? new Date(String(data.borrowed_at)).toLocaleDateString()
+        : "",
+      l_name: data.user?.l_name ?? "",
+      f_name: data.user?.f_name ?? "",
+      returnBy: data.return_by
+        ? new Date(String(data.return_by)).toLocaleDateString()
+        : "",
+    };
+  });
+
   return (
     <Box sx={{ height: 675, width: "100%" }}>
       <DataGrid
-        rows={rows}
+        rows={formattedData}
         columns={columns}
         initialState={{
           pagination: {
