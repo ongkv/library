@@ -3,6 +3,7 @@ import { LOREM_IPSUM } from "@/lib/helpers/placeholders";
 import { RETURN_BY_DAYS } from "@/lib/types/book";
 import { BookFormats } from "@/lib/types/bookFormat";
 import { BookStatuses } from "@/lib/types/bookStatus";
+import { add } from "date-fns";
 
 const globalForPrisma = globalThis as unknown as { prisma: PrismaClient };
 
@@ -187,7 +188,9 @@ const seedBookCatalogue = async () => {
           book_status_id: BookStatuses.Borrowed,
           user_id: 1,
           borrowed_at: LATE_BORROWED_DATE,
-          return_by: new Date(LATE_BORROWED_DATE.getDate() + RETURN_BY_DAYS),
+          return_by: new Date(
+            add(LATE_BORROWED_DATE, { days: RETURN_BY_DAYS }),
+          ),
         },
         {
           id: 3,
@@ -207,7 +210,7 @@ const seedBookCatalogue = async () => {
           book_status_id: BookStatuses.Borrowed,
           user_id: 1,
           borrowed_at: NOT_LATE_DATE,
-          return_by: new Date(NOT_LATE_DATE.getDate() + RETURN_BY_DAYS),
+          return_by: new Date(add(NOT_LATE_DATE, { days: RETURN_BY_DAYS })),
         },
         {
           id: 6,
@@ -228,7 +231,9 @@ const seedBookCatalogue = async () => {
           user_id: 1,
           reserved_at: new Date("2026-07-30"),
           borrowed_at: LATE_BORROWED_DATE,
-          return_by: new Date(LATE_BORROWED_DATE.getDate() + RETURN_BY_DAYS),
+          return_by: new Date(
+            add(LATE_BORROWED_DATE, { days: RETURN_BY_DAYS }),
+          ),
         },
       ],
     });
@@ -251,7 +256,7 @@ const seedBookCatalogueHistory = async () => {
           book_status_id: BookStatuses.Borrowed,
           user_id: 1,
           borrowed_at: LATE_BORROWED_DATE,
-          return_by: new Date(LATE_BORROWED_DATE.getDate() + RETURN_BY_DAYS),
+          return_by: add(LATE_BORROWED_DATE, { days: RETURN_BY_DAYS }),
         },
         {
           book_id: 3,
@@ -271,7 +276,7 @@ const seedBookCatalogueHistory = async () => {
           book_status_id: BookStatuses.Borrowed,
           user_id: 1,
           borrowed_at: NOT_LATE_DATE,
-          return_by: new Date(NOT_LATE_DATE.getDate() + RETURN_BY_DAYS),
+          return_by: add(NOT_LATE_DATE, { days: RETURN_BY_DAYS }),
         },
         {
           book_id: 6,
@@ -292,7 +297,7 @@ const seedBookCatalogueHistory = async () => {
           user_id: 1,
           reserved_at: new Date("2026-07-30"),
           borrowed_at: LATE_BORROWED_DATE,
-          return_by: new Date(LATE_BORROWED_DATE.getDate() + RETURN_BY_DAYS),
+          return_by: add(LATE_BORROWED_DATE, { days: RETURN_BY_DAYS }),
         },
       ],
     });
