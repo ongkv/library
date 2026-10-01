@@ -1,9 +1,10 @@
+import { getDateFromJSONString } from "@/lib/helpers/date";
 import { BookFormats } from "@/lib/types/bookFormat";
 import { GetStaffCatalogueBooksDTO } from "@/lib/types/DTO/bookCatalogue";
 import Box from "@mui/material/Box";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 
-const columns: GridColDef<(typeof rows)[number]>[] = [
+const columns: GridColDef[] = [
   { field: "id", headerName: "ID", width: 90 },
   {
     field: "title",
@@ -43,37 +44,6 @@ const columns: GridColDef<(typeof rows)[number]>[] = [
   },
 ];
 
-const rows = [
-  {
-    id: 1,
-    title: "The Stellar Horizon",
-    author: "Gene Rodriquez",
-    format: BookFormats[BookFormats.Paperback],
-    reservedAt: new Date().toLocaleDateString(),
-    borrowedAt: new Date().toLocaleDateString(),
-    l_name: "Snow",
-    f_name: "Jon",
-    returnBy: new Date().toLocaleDateString(),
-  },
-  { id: 2, l_name: "Lannister", f_name: "Cersei" },
-  { id: 3, l_name: "Lannister", f_name: "Jaime" },
-  { id: 4, l_name: "Stark", f_name: "Arya" },
-  { id: 5, l_name: "Targaryen", f_name: "Daenerys" },
-  { id: 6, l_name: "Melisandre", f_name: null },
-  { id: 7, l_name: "Clifford", f_name: "Ferrara" },
-  { id: 8, l_name: "Frances", f_name: "Rossini" },
-  { id: 9, l_name: "Roxie", f_name: "Harvey" },
-  { id: 10, l_name: "Snow", f_name: "Jon" },
-  { id: 11, l_name: "Lannister", f_name: "Cersei" },
-  { id: 12, l_name: "Lannister", f_name: "Jaime" },
-  { id: 13, l_name: "Stark", f_name: "Arya" },
-  { id: 14, l_name: "Targaryen", f_name: "Daenerys" },
-  { id: 15, l_name: "Melisandre", f_name: null },
-  { id: 16, l_name: "Clifford", f_name: "Ferrara" },
-  { id: 17, l_name: "Frances", f_name: "Rossini" },
-  { id: 18, l_name: "Roxie", f_name: "Harvey" },
-];
-
 type BookCatalogueListProps = {
   data: GetStaffCatalogueBooksDTO[];
 };
@@ -86,16 +56,14 @@ export default function BookCatalogueList({ data }: BookCatalogueListProps) {
       author: data.book.author,
       format: BookFormats[data.book.book_format_id],
       reservedAt: data.reserved_at
-        ? new Date(String(data.reserved_at)).toLocaleDateString()
+        ? getDateFromJSONString(data.reserved_at)
         : "",
       borrowedAt: data.borrowed_at
-        ? new Date(String(data.borrowed_at)).toLocaleDateString()
+        ? getDateFromJSONString(data.borrowed_at)
         : "",
       l_name: data.user?.l_name ?? "",
       f_name: data.user?.f_name ?? "",
-      returnBy: data.return_by
-        ? new Date(String(data.return_by)).toLocaleDateString()
-        : "",
+      returnBy: data.return_by ? getDateFromJSONString(data.return_by) : "",
     };
   });
 
