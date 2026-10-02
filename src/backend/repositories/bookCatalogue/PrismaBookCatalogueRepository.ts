@@ -12,6 +12,7 @@ export class PrismaBookCatalogueRepository implements IBookCatalogueRepository {
     selectArgs?: Partial<Record<keyof BookCatalogue, boolean>>,
     bookSelectArgs?: Partial<Record<keyof Book, boolean>>,
     userSelectArgs?: Partial<Record<keyof User, boolean>>,
+    includeDeleted: boolean = false,
   ): Promise<BookCatalogueWithBookAndUser[]> {
     return prisma.bookCatalogue.findMany({
       select: {
@@ -26,6 +27,20 @@ export class PrismaBookCatalogueRepository implements IBookCatalogueRepository {
             ...userSelectArgs,
           },
         },
+      },
+      where: {
+        deleted_at: includeDeleted ? undefined : null,
+      },
+    });
+  }
+
+  async getRemainingBooksByBookId(
+    bookId: number,
+  ): Promise<BookCatalogue[] | null> {
+    return prisma.bookCatalogue.findMany({
+      where: {
+        book_id: bookId,
+        deleted_at: null,
       },
     });
   }
@@ -70,8 +85,9 @@ export class PrismaBookCatalogueRepository implements IBookCatalogueRepository {
   }
 
   async delete(id: number): Promise<BookCatalogue> {
-    return prisma.bookCatalogue.delete({
+    return prisma.bookCatalogue.update({
       where: { id },
+      data: { deleted_at: new Date() },
     });
   }
 }

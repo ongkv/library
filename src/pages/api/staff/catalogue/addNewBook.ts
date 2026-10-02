@@ -14,7 +14,6 @@ export default async function handler(
       return res.status(405).json({ error: "Method Not Allowed" });
     }
     const body: BookCatalogueAddFormInputsDTO = JSON.parse(req.body);
-    console.log(body);
 
     const { title, author, year, format, isbn, description, pageCount } = body;
     if (!title || !author || !year || !format || !isbn || !pageCount) {

@@ -8,4 +8,8 @@ export class BookFormatService implements IBookFormatService {
   async getBookFormatByName(name: string): Promise<BookFormat | null> {
     return this.bookFormatRepository.getByName(name);
   }
+
+  async getBookFormatById(id: number): Promise<BookFormat | null> {
+    return this.bookFormatRepository.getById(id);
+  }
 }

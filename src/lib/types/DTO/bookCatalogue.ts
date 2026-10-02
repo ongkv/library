@@ -61,3 +61,19 @@ export type BookCatalogueAddFormInputsDTO = {
   description: string;
   pageCount: string;
 };
+
+export type GetCatalogueBookDTO = {
+  id: number;
+  status: string;
+  bookFormat: string;
+  title: string;
+  author: string;
+  year: string;
+  isbn: string;
+  description: string;
+  pageCount: number;
+  reservedAt: string;
+  borrowedAt: string;
+  recipient: string;
+  returnBy: string;
+};

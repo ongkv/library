@@ -1,10 +1,12 @@
 import BookCatalogueList from "@/components/staff/BookCatalogueList";
 import { fetcher } from "@/lib/helpers/fetcher";
 import { GetStaffCatalogueBooksDTO } from "@/lib/types/DTO/bookCatalogue";
-import { Box, Stack, Typography } from "@mui/material";
+import { Box, Button, Stack, Typography } from "@mui/material";
+import { useRouter } from "next/router";
 import useSWR from "swr";
 
 export default function BookCataloguePage() {
+  const router = useRouter();
   const { data, isLoading } = useSWR<GetStaffCatalogueBooksDTO[]>(
     "/api/staff/catalogue/getStaffCatalogueBooks",
     fetcher,
@@ -16,7 +18,15 @@ export default function BookCataloguePage() {
   return (
     <Box sx={{ p: 5 }}>
       <Stack spacing={4}>
-        <Typography variant="h5">Book Catalogue</Typography>
+        <Stack direction="row" spacing={3}>
+          <Typography variant="h5">Book Catalogue</Typography>
+          <Button
+            variant="contained"
+            onClick={() => router.push("/staff/catalogue/add")}
+          >
+            Add Book
+          </Button>
+        </Stack>
         <BookCatalogueList data={data} />
       </Stack>
     </Box>

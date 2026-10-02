@@ -19,3 +19,17 @@ export type AddNewBookDTO = {
 export type AddNewBookResponseDTO = {
   id: number;
 };
+
+export type DeleteCatalogueBookDTO = {
+  success: boolean;
+};
+
+export type GetBookDTO = {
+  bookFormat: string;
+  title: string;
+  author: string;
+  year: string;
+  isbn: string;
+  description: string;
+  pageCount: number;
+};

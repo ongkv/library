@@ -8,4 +8,5 @@ export interface IBookService {
   ): Promise<Book[]>;
   addNewBook(bookData: Partial<Book>): Promise<Book>;
   createCatalogueEntry(bookId: number): Promise<void>;
+  getBookById(id: number): Promise<Book | null>;
 }
