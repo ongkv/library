@@ -12,6 +12,7 @@ import Menu from "@mui/material/Menu";
 import SearchIcon from "@mui/icons-material/Search";
 import AccountCircle from "@mui/icons-material/AccountCircle";
 import NotificationsIcon from "@mui/icons-material/Notifications";
+import { useRouter } from "next/router";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -55,6 +56,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 
 export default function UserNavbar() {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const router = useRouter();
 
   const isMenuOpen = Boolean(anchorEl);
 
@@ -62,8 +64,9 @@ export default function UserNavbar() {
     setAnchorEl(event.currentTarget);
   };
 
-  const handleMenuClose = () => {
+  const handleMenuClose = (route: string) => {
     setAnchorEl(null);
+    router.push(route);
   };
 
   const menuId = "primary-search-account-menu";
@@ -81,12 +84,15 @@ export default function UserNavbar() {
         horizontal: "right",
       }}
       open={isMenuOpen}
-      onClose={handleMenuClose}
+      onClose={() => handleMenuClose("")}
     >
-      <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-      <MenuItem onClick={handleMenuClose}>Payment History</MenuItem>
-      <MenuItem onClick={handleMenuClose}>My account</MenuItem>
-      <MenuItem onClick={handleMenuClose}>Log Out</MenuItem>
+      <MenuItem onClick={() => handleMenuClose("")}>Profile</MenuItem>
+      <MenuItem onClick={() => handleMenuClose("")}>Payment History</MenuItem>
+      <MenuItem onClick={() => handleMenuClose("/staff/catalogue")}>
+        Book Catalogue
+      </MenuItem>
+      <MenuItem onClick={() => handleMenuClose("")}>My account</MenuItem>
+      <MenuItem onClick={() => handleMenuClose("")}>Log Out</MenuItem>
     </Menu>
   );
 
@@ -99,6 +105,7 @@ export default function UserNavbar() {
             noWrap
             component="div"
             sx={{ display: { xs: "none", sm: "block" } }}
+            onClick={() => router.push("/")}
           >
             Library
           </Typography>
