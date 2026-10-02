@@ -1,8 +1,16 @@
 import { prisma } from "../../models/prisma-db";
-import { IBaseRepository } from "../IBaseRepository";
 import { BookFormat } from "@/generated/prisma/client";
+import { IBookFormatRepository } from "./IBookFormatRepository";
 
-export class PrismaBookFormatRepository implements IBaseRepository<BookFormat> {
+export class PrismaBookFormatRepository implements IBookFormatRepository {
+  async getByName(name: string): Promise<BookFormat | null> {
+    return prisma.bookFormat.findUnique({
+      where: {
+        name,
+      },
+    });
+  }
+
   async getAll(): Promise<BookFormat[]> {
     return prisma.bookFormat.findMany();
   }

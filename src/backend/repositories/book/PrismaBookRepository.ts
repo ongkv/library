@@ -14,6 +14,12 @@ export class PrismaBookRepository implements IBookRepository {
     });
   }
 
+  async getByISBN(isbn: string): Promise<Book | null> {
+    return prisma.book.findUnique({
+      where: { isbn },
+    });
+  }
+
   async getAll(): Promise<Book[]> {
     return prisma.book.findMany();
   }
