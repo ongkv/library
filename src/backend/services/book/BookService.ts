@@ -72,6 +72,13 @@ export class BookService implements IBookService {
 
     const existingBook = await this.bookRepository.getByISBN(isbn);
     if (existingBook) {
+      // If the book exists but is marked as deleted, we can "undelete" it by setting deleted_at to null
+      if (existingBook.deleted_at !== null) {
+        await this.bookRepository.update({
+          id: existingBook.id,
+          deleted_at: null,
+        });
+      }
       await this.createCatalogueEntry(existingBook.id);
 
       return existingBook;

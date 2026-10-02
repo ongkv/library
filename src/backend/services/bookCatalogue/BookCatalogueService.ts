@@ -8,12 +8,13 @@ import {
 } from "@/lib/types/DTO/bookCatalogue";
 import { IBookCatalogueRepository } from "@/backend/repositories/bookCatalogue/IBookCatalogueRepository";
 import { IBaseRepository } from "@/backend/repositories/IBaseRepository";
+import { IBookRepository } from "@/backend/repositories/book/IBookRepository";
 
 export class BookCatalogueService implements IBookCatalogueService {
   constructor(
     private readonly bookCatalogueRepository: IBookCatalogueRepository,
     private readonly bookCatalogueHistoryRepository: IBaseRepository<BookCatalogueHistory>,
-    private readonly bookRepository: IBookCatalogueRepository,
+    private readonly bookRepository: IBookRepository,
   ) {}
 
   /**

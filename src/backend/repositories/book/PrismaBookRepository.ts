@@ -6,11 +6,15 @@ export class PrismaBookRepository implements IBookRepository {
   async getLatestNRows(
     n: number,
     selectArgs?: Partial<Record<keyof Book, boolean>>,
+    includeDeleted: boolean = false,
   ): Promise<Book[]> {
     return prisma.book.findMany({
       take: n,
       orderBy: [{ id: "desc" }],
       select: selectArgs,
+      where: {
+        deleted_at: includeDeleted ? undefined : null,
+      },
     });
   }
 
@@ -64,6 +68,7 @@ export class PrismaBookRepository implements IBookRepository {
     cover_img,
     description,
     page_count,
+    deleted_at,
   }: Book): Promise<Book> {
     return prisma.book.update({
       where: { id },
@@ -76,6 +81,7 @@ export class PrismaBookRepository implements IBookRepository {
         cover_img,
         description,
         page_count,
+        deleted_at,
       },
     });
   }

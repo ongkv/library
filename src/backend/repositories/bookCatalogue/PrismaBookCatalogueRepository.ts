@@ -12,6 +12,7 @@ export class PrismaBookCatalogueRepository implements IBookCatalogueRepository {
     selectArgs?: Partial<Record<keyof BookCatalogue, boolean>>,
     bookSelectArgs?: Partial<Record<keyof Book, boolean>>,
     userSelectArgs?: Partial<Record<keyof User, boolean>>,
+    includeDeleted: boolean = false,
   ): Promise<BookCatalogueWithBookAndUser[]> {
     return prisma.bookCatalogue.findMany({
       select: {
@@ -26,6 +27,9 @@ export class PrismaBookCatalogueRepository implements IBookCatalogueRepository {
             ...userSelectArgs,
           },
         },
+      },
+      where: {
+        deleted_at: includeDeleted ? undefined : null,
       },
     });
   }
