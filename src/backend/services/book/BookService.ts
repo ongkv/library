@@ -108,4 +108,13 @@ export class BookService implements IBookService {
       book_status_id: BookStatuses.Available,
     });
   }
+
+  /**
+   * Gets a book by its ID
+   * @param id ID of book
+   * @returns book if found, null otherwise
+   */
+  async getBookById(id: number): Promise<Book | null> {
+    return this.bookRepository.getById(id);
+  }
 }
