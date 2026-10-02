@@ -32,4 +32,8 @@ export class BookCatalogueService implements IBookCatalogueService {
       getStaffBookCatalogueUserSelectArgs,
     );
   }
+
+  async getCatalogueBookById(id: number): Promise<BookCatalogue | null> {
+    return this.bookCatalogueRepository.getById(id);
+  }
 }

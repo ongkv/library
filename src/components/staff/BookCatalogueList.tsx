@@ -3,6 +3,7 @@ import { BookFormats } from "@/lib/types/bookFormat";
 import { GetStaffCatalogueBooksDTO } from "@/lib/types/DTO/bookCatalogue";
 import Box from "@mui/material/Box";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import { useRouter } from "next/router";
 
 const columns: GridColDef[] = [
   { field: "id", headerName: "ID", width: 90 },
@@ -49,6 +50,8 @@ type BookCatalogueListProps = {
 };
 
 export default function BookCatalogueList({ data }: BookCatalogueListProps) {
+  const router = useRouter();
+
   const formattedData = data.map((data) => {
     return {
       id: data.id,
@@ -81,7 +84,9 @@ export default function BookCatalogueList({ data }: BookCatalogueListProps) {
         }}
         pageSizeOptions={[10]}
         checkboxSelection
-        disableRowSelectionOnClick
+        onRowClick={(row) => {
+          router.push(`/staff/catalogue/books/${row.id}`);
+        }}
       />
     </Box>
   );

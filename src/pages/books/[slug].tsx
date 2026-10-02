@@ -5,7 +5,9 @@ import {
   Card,
   CardContent,
   CardMedia,
+  Divider,
   Grid,
+  Stack,
   Typography,
 } from "@mui/material";
 import { useRouter } from "next/router";
@@ -66,13 +68,18 @@ export default function BookPage() {
             <Grid size={8}>
               <Card variant="outlined">
                 <CardContent>
-                  <BookPageField label="Title" value={title} />
-                  <BookPageField label="Author" value={author} />
-                  <BookPageField label="Year" value={year} />
-                  <BookPageField label="Format" value={bookFormat} />
-                  <BookPageField label="ISBN" value={isbn} />
-                  <BookPageField label="Description" value={description} />
-                  <BookPageField label="Page Count" value={pageCount} />
+                  <Typography variant="h6">Book Details</Typography>
+                  <Divider />
+
+                  <Stack sx={{ py: 2 }}>
+                    <BookPageField label="Title" value={title} />
+                    <BookPageField label="Author" value={author} />
+                    <BookPageField label="Year" value={year} />
+                    <BookPageField label="Format" value={bookFormat} />
+                    <BookPageField label="ISBN" value={isbn} />
+                    <BookPageField label="Description" value={description} />
+                    <BookPageField label="Page Count" value={pageCount} />
+                  </Stack>
                 </CardContent>
               </Card>
             </Grid>
