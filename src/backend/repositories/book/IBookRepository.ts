@@ -6,4 +6,5 @@ export interface IBookRepository extends IBaseRepository<Book> {
     n: number,
     selectArgs?: Partial<Record<keyof Book, boolean>>,
   ): Promise<Book[]>;
+  getByISBN(isbn: string): Promise<Book | null>;
 }

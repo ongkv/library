@@ -1,10 +1,17 @@
-import { Book } from "@/generated/prisma/client";
+import { Book, BookCatalogueHistory } from "@/generated/prisma/client";
 import { IBookService } from "./IBookService";
 import { IBookRepository } from "@/backend/repositories/book/IBookRepository";
 import { GetLandingBooksDTO } from "@/lib/types/DTO/book";
+import { IBookCatalogueRepository } from "@/backend/repositories/bookCatalogue/IBookCatalogueRepository";
+import { BookStatuses } from "@/lib/types/bookStatus";
+import { IBaseRepository } from "@/backend/repositories/IBaseRepository";
 
 export class BookService implements IBookService {
-  constructor(private readonly bookRepository: IBookRepository) {}
+  constructor(
+    private readonly bookRepository: IBookRepository,
+    private readonly bookCatalogueRepository: IBookCatalogueRepository,
+    private readonly bookCatalogueHistoryRepository: IBaseRepository<BookCatalogueHistory>,
+  ) {}
 
   /**
    * Gets all books
@@ -38,6 +45,67 @@ export class BookService implements IBookService {
       title: true,
       year: true,
       author: true,
+    });
+  }
+
+  /**
+   * Creates a book entry if it doesn't already exist
+   * Adds a new catalogue item entry for the new / existing book
+   * @param bookData book information
+   * @returns existing / created book
+   */
+  async addNewBook(bookData: Partial<Book>): Promise<Book> {
+    const {
+      book_format_id,
+      title,
+      author,
+      year,
+      isbn,
+      cover_img,
+      description,
+      page_count,
+    } = bookData;
+
+    if (!book_format_id || !title || !author || !year || !isbn || !page_count) {
+      throw new Error("Missing required fields for adding a new book.");
+    }
+
+    const existingBook = await this.bookRepository.getByISBN(isbn);
+    if (existingBook) {
+      await this.createCatalogueEntry(existingBook.id);
+
+      return existingBook;
+    }
+
+    const book: Book = await this.bookRepository.create({
+      book_format_id,
+      title,
+      author,
+      year,
+      isbn,
+      cover_img,
+      description,
+      page_count,
+    });
+    await this.createCatalogueEntry(book.id);
+
+    return book;
+  }
+
+  /**
+   * Creates a new catalogue item entry along with a new history row
+   * @param bookId ID of book
+   */
+  async createCatalogueEntry(bookId: number): Promise<void> {
+    const bookCatalogue = await this.bookCatalogueRepository.create({
+      book_id: bookId,
+      book_status_id: BookStatuses.Available,
+    });
+
+    await this.bookCatalogueHistoryRepository.create({
+      book_id: bookId,
+      book_catalogue_id: bookCatalogue.id,
+      book_status_id: BookStatuses.Available,
     });
   }
 }

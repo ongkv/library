@@ -6,4 +6,6 @@ export interface IBookService {
     n: number,
     selectArgs?: Partial<Record<keyof Book, boolean>>,
   ): Promise<Book[]>;
+  addNewBook(bookData: Partial<Book>): Promise<Book>;
+  createCatalogueEntry(bookId: number): Promise<void>;
 }

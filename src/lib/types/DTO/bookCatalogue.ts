@@ -51,3 +51,13 @@ const getStaffCatalogueBooks =
 export type GetStaffCatalogueBooksDTO = Prisma.BookCatalogueGetPayload<
   typeof getStaffCatalogueBooks
 >;
+
+export type BookCatalogueAddFormInputsDTO = {
+  title: string;
+  author: string;
+  year: string;
+  format: string;
+  isbn: string;
+  description: string;
+  pageCount: string;
+};

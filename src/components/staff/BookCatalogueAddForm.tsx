@@ -9,27 +9,24 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { HTMLInputTypeAttribute } from "react";
+import { HTMLInputTypeAttribute, useEffect } from "react";
 import { Control, Controller, useForm } from "react-hook-form";
 import NumberField from "../form/NumberField";
 import { PatternFormat } from "react-number-format";
-
-type BookCatalogueAddFormInputs = {
-  title: string;
-  author: string;
-  year: string;
-  format: string;
-  isbn: string;
-  description: string;
-  pageCount: string;
-};
+import useSWRMutation from "swr/mutation";
+import { createBookRequest } from "@/lib/helpers/fetcher";
+import { BookCatalogueAddFormInputsDTO } from "@/lib/types/DTO/bookCatalogue";
 
 type BookCatalogueAddFormFieldProps = {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  control: Control<BookCatalogueAddFormInputs, any, BookCatalogueAddFormInputs>;
+  control: Control<
+    BookCatalogueAddFormInputsDTO,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    any,
+    BookCatalogueAddFormInputsDTO
+  >;
   type?: HTMLInputTypeAttribute;
   label: string;
-  input: keyof BookCatalogueAddFormInputs;
+  input: keyof BookCatalogueAddFormInputsDTO;
   placeholder?: string;
   multiline?: boolean;
 };
@@ -66,10 +63,12 @@ function BookCatalogueAddFormField({
       <Controller
         control={control}
         name={input}
-        render={({ field: { onChange } }) => (
+        render={({ field }) => (
           <TextField
+            {...field}
+            value={field.value ?? ""}
             placeholder={placeholder}
-            onChange={onChange}
+            onChange={(event) => field.onChange(event.target.value)}
             fullWidth
             type={type}
             multiline={multiline}
@@ -91,15 +90,8 @@ function BookCatalogueAddFormSelect({
       <Controller
         control={control}
         name={input}
-        render={({ field: { onChange, value, name, ref, onBlur } }) => (
-          <Select
-            name={name}
-            inputRef={ref}
-            value={value ?? BookFormats[BookFormats.Paperback]}
-            onBlur={onBlur}
-            onChange={(event) => onChange(event.target.value)}
-            fullWidth
-          >
+        render={({ field: { onChange } }) => (
+          <Select onChange={onChange} defaultValue="" fullWidth>
             <MenuItem value={BookFormats[BookFormats.Paperback]}>
               {BookFormats[BookFormats.Paperback]}
             </MenuItem>
@@ -123,13 +115,14 @@ function BookCatalogueAddNumberField({
       <Controller
         control={control}
         name={input}
-        render={({ field: { onChange, name, ref, onBlur } }) => (
+        render={({ field }) => (
           <NumberField
             min={0}
-            name={name}
-            ref={ref}
-            onBlur={onBlur}
-            onValueChange={onChange}
+            value={field.value ? Number(field.value) : 0}
+            name={field.name}
+            ref={field.ref}
+            onBlur={field.onBlur}
+            onValueChange={(value) => field.onChange(value)}
           />
         )}
       />
@@ -170,8 +163,28 @@ export default function BookCatalogueAddForm() {
     handleSubmit,
     control,
     formState: { isValid, isDirty },
-  } = useForm<BookCatalogueAddFormInputs>();
-  const onSubmit = (data: BookCatalogueAddFormInputs) => console.log(data);
+  } = useForm<BookCatalogueAddFormInputsDTO>({
+    defaultValues: {
+      title: "",
+      author: "",
+      year: "",
+      format: BookFormats[BookFormats.Paperback],
+      isbn: "",
+      description: "",
+      pageCount: "",
+    },
+  });
+  const { data, trigger, isMutating } = useSWRMutation(
+    "/api/staff/catalogue/addNewBook",
+    createBookRequest,
+  );
+  const onSubmit = (data: BookCatalogueAddFormInputsDTO) => trigger(data);
+
+  useEffect(() => {
+    if (!isMutating && data) {
+      console.log("Book added successfully:", data);
+    }
+  }, [isMutating, data]);
 
   return (
     <form onSubmit={handleSubmit((data) => onSubmit(data))}>
@@ -227,9 +240,9 @@ export default function BookCatalogueAddForm() {
           placeholder="Book Page Count"
         />
         <Button
+          type="submit"
           variant="contained"
           autoFocus
-          onClick={handleSubmit(onSubmit)}
           disabled={!isValid || !isDirty}
         >
           Save
