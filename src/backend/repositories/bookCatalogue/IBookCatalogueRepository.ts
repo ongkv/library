@@ -8,4 +8,5 @@ export interface IBookCatalogueRepository extends IBaseRepository<BookCatalogue>
     bookSelectArgs?: Partial<Record<keyof Book, boolean>>,
     userSelectArgs?: Partial<Record<keyof User, boolean>>,
   ): Promise<BookCatalogueWithBookAndUser[]>;
+  getRemainingBooksByBookId(bookId: number): Promise<BookCatalogue[] | null>;
 }

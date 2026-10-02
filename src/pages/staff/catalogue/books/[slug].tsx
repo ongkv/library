@@ -1,4 +1,8 @@
-import { fetcher } from "@/lib/helpers/fetcher";
+import {
+  createBookRequest,
+  deleteBookRequest,
+  fetcher,
+} from "@/lib/helpers/fetcher";
 import { BookStatuses } from "@/lib/types/bookStatus";
 import { GetCatalogueBookDTO } from "@/lib/types/DTO/bookCatalogue";
 import {
@@ -12,7 +16,9 @@ import {
   Typography,
 } from "@mui/material";
 import { useRouter } from "next/router";
+import { useEffect } from "react";
 import useSWR from "swr";
+import useSWRMutation from "swr/mutation";
 
 type BookPageFieldProps = {
   label: string;
@@ -38,6 +44,17 @@ export default function CatalogueBookPage() {
     `/api/staff/catalogue/getCatalogueBook?id=${router.query.slug}`,
     fetcher,
   );
+
+  const { data: deleteResponse, trigger } = useSWRMutation(
+    "/api/staff/catalogue/deleteCatalogueBook",
+    deleteBookRequest,
+  );
+
+  useEffect(() => {
+    if (deleteResponse && deleteResponse.success) {
+      router.push("/staff/catalogue");
+    }
+  }, [deleteResponse, router]);
 
   if (isLoading) return <div>Loading...</div>;
   if (!data) return <div>Error: Failed to retrieve book data</div>;
@@ -130,7 +147,11 @@ export default function CatalogueBookPage() {
                     >
                       Return
                     </Button>
-                    <Button variant="contained" color="error">
+                    <Button
+                      variant="contained"
+                      color="error"
+                      onClick={() => trigger(id)}
+                    >
                       Delete
                     </Button>
                   </Stack>

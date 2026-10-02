@@ -20,6 +20,10 @@ export type AddNewBookResponseDTO = {
   id: number;
 };
 
+export type DeleteCatalogueBookDTO = {
+  success: boolean;
+};
+
 export type GetBookDTO = {
   bookFormat: string;
   title: string;

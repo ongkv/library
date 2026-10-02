@@ -30,6 +30,17 @@ export class PrismaBookCatalogueRepository implements IBookCatalogueRepository {
     });
   }
 
+  async getRemainingBooksByBookId(
+    bookId: number,
+  ): Promise<BookCatalogue[] | null> {
+    return prisma.bookCatalogue.findMany({
+      where: {
+        book_id: bookId,
+        deleted_at: null,
+      },
+    });
+  }
+
   async getById(id: number): Promise<BookCatalogue | null> {
     return prisma.bookCatalogue.findUnique({
       where: { id },
@@ -70,8 +81,9 @@ export class PrismaBookCatalogueRepository implements IBookCatalogueRepository {
   }
 
   async delete(id: number): Promise<BookCatalogue> {
-    return prisma.bookCatalogue.delete({
+    return prisma.bookCatalogue.update({
       where: { id },
+      data: { deleted_at: new Date() },
     });
   }
 }

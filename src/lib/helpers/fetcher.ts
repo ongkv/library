@@ -18,3 +18,10 @@ export async function createBookRequest(
     body: JSON.stringify(arg),
   }).then((res) => res.json());
 }
+
+export async function deleteBookRequest(url: string, { arg }: { arg: number }) {
+  return fetch(url, {
+    method: "DELETE",
+    body: JSON.stringify({ id: arg }),
+  }).then((res) => res.json());
+}
