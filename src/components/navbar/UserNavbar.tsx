@@ -86,13 +86,9 @@ export default function UserNavbar() {
       open={isMenuOpen}
       onClose={() => handleMenuClose("")}
     >
-      <MenuItem onClick={() => handleMenuClose("")}>Profile</MenuItem>
-      <MenuItem onClick={() => handleMenuClose("")}>Payment History</MenuItem>
       <MenuItem onClick={() => handleMenuClose("/staff/catalogue")}>
         Book Catalogue
       </MenuItem>
-      <MenuItem onClick={() => handleMenuClose("")}>My account</MenuItem>
-      <MenuItem onClick={() => handleMenuClose("")}>Log Out</MenuItem>
     </Menu>
   );
 
